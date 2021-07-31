@@ -20,8 +20,6 @@
   "type": "module",
   "homepage": "https://github.com/alejandro0619/Maki#readme",
   "dependencies": {
-    "@octokit/core": "^3.5.1",
-    "axios": "^0.21.1",
     "crypto-js": "^4.1.1",
     "inquirer": "^8.1.2",
     "lowdb": "^2.1.0"

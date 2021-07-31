@@ -1,16 +1,17 @@
-import CryptoJS, { lib } from "crypto-js";
-import IPasswordParams from '../interfaces/password_params.js'
-import Axios from 'axios';
+import CryptoJS from "crypto-js";
+import crypto from 'node:crypto';
 const { AES, enc } = CryptoJS;
-
 export default class Password {
-  public async generatePassword(params: IPasswordParams) {
-    const {
-      capitalLetters,
-      length,
-      number } = params;
-    const response = Axios.get('https://api.happi.dev/v1/generate-password')
+  public generatePassword(length: number): string {
+
+    const wishlist = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz~!@-#$';
+
+    return Array.
+      from(crypto.randomFillSync(new Uint32Array(length)))
+      .map((x) => wishlist[x % wishlist.length])
+      .join('');
   }
+
   public encrypt(pswd: string, psphrase: string): string { // pswd stands for password and psphrase for passphrase 
     return AES.encrypt(pswd, psphrase).toString();
   }
@@ -19,3 +20,5 @@ export default class Password {
     return AES.decrypt(pswdEncrypted, psphrase).toString(enc.Utf8);
   }
 }
+const aaa = new Password();
+console.log(aaa.generatePassword(50))
