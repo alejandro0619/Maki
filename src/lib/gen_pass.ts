@@ -20,5 +20,3 @@ export default class Password {
     return AES.decrypt(pswdEncrypted, psphrase).toString(enc.Utf8);
   }
 }
-const aaa = new Password();
-console.log(aaa.generatePassword(50))
