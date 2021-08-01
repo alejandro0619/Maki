@@ -2,8 +2,8 @@ import inquirer from 'inquirer';
 import clipboardy from 'clipboardy';
 import chalk from 'chalk';
 import { Choices } from '../utils/Menu_choices.js';
-import Password from './gen_pass.js';
-const password = new Password();
+import Password from './password.js';
+const password: Password = new Password();
 import { parseToNumber } from '../utils/parse_to_number.js';
 export default class TUI { // stands for Terminal User Interface, this is where I'll create my UI using inquirer.
 
@@ -38,7 +38,7 @@ export default class TUI { // stands for Terminal User Interface, this is where 
       name: 'length',
       type: 'input',
     });
-    const pswdLength = parseToNumber(generateOptions['length']);
+    const pswdLength: number = parseToNumber(generateOptions['length']);
     if (isNaN(pswdLength)) {
       console.log(`Please enter a number.`);
       return this.generateView();
