@@ -1,4 +1,6 @@
 import inquirer from 'inquirer';
+import clipboardy from 'clipboardy';
+import chalk from 'chalk';
 import { Choices } from '../utils/Menu_choices.js';
 import Password from './gen_pass.js';
 const password = new Password();
@@ -16,7 +18,7 @@ export default class TUI { // stands for Terminal User Interface, this is where 
        case Choices.generate:
          this.generateView()
          break;
-       case Choices.save:
+       case Choices.create:
          
          break;
        case Choices.edit:
@@ -39,9 +41,11 @@ export default class TUI { // stands for Terminal User Interface, this is where 
     const pswdLength = parseToNumber(generateOptions['length']);
     if (isNaN(pswdLength)) {
       console.log(`Please enter a number.`);
-      this.generateView();
+      return this.generateView();
     } else {
-      console.log(pswdLength);
+      const pswdGenerated: string = password.generatePassword(pswdLength);
+      await clipboardy.write(pswdGenerated);
+      console.log(`Your password: ${chalk`{green ${pswdGenerated} }`} is copied on the clipboard!`);
     }
   }
 }
