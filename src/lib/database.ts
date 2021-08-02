@@ -1,13 +1,21 @@
-import { JSONFile, Low } from 'lowdb';
-import path, { join } from 'path';
-import {URL} from 'url'
-const __dirname = path.dirname(new URL(import.meta.url).pathname);
-import pswdItem from '../db/pswd_Item';
-export default class Database {
-  pswdMap = new Map<number, pswdItem>();
+import { join, dirname } from 'path'
+import { Low, JSONFile } from 'lowdb'
+import { fileURLToPath } from 'url'
+import { pswdCollection } from '../db/pswd_Item';
+const __dirname = dirname(fileURLToPath(import.meta.url));
+console.log(__dirname)
 
-  constructor(public title: string, public pswdItem: pswdItem[] = []) {
-    pswdItem.forEach(pswd => this.pswdMap.set(pswd.ID, pswd));
-  }
+
+export class DbService {
+  private async setupDB() {
+
+    const adapter = new JSONFile<pswdCollection>(join(__dirname, '../db/db.json'));
+    const db = new Low<pswdCollection>(adapter);
+    await db.read();
+    db.data ||= { schema : [] }
+    const { schema } = db.data;
+    //schema.push({ title: 'ua', pswd: 'sssaaaaa' });
+    //await db.write();
+    }
 }
-
+const example = new DbService();

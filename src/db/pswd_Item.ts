@@ -1,6 +1,7 @@
-export default interface pswdItem {
-  ID: number;
-  title: string;
-  pswd: string;
-
+ type pswdSchema = {
+    title: string,
+    pswd: string,
+}
+export type pswdCollection = {
+  schema: pswdSchema[]
 }
