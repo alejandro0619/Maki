@@ -2,16 +2,12 @@ import { JSONFile, Low } from 'lowdb';
 import path, { join } from 'path';
 import {URL} from 'url'
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
+import pswdItem from '../db/pswd_Item';
 export default class Database {
-  
-  private async createDatabase() {
+  pswdMap = new Map<number, pswdItem>();
 
-  }
-  saveInDatabase() {
-  this.createDatabase()
-    
+  constructor(public title: string, public pswdItem: pswdItem[] = []) {
+    pswdItem.forEach(pswd => this.pswdMap.set(pswd.ID, pswd));
   }
 }
 
-const aa = new Database();
-aa.saveInDatabase()
