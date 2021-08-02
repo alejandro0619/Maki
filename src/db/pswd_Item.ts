@@ -1,4 +1,4 @@
- type pswdSchema = {
+ export type pswdSchema = {
     title: string,
     pswd: string,
 }
