@@ -19,21 +19,33 @@ export class DbService {
     schema.push(password);
     this.db.write();
   }
-  getPasswordByTitle() {
-    
+  async getPasswordByTitle(title: string) {
+    const data = await this.setupDB();
+    const { schema } = data;
+    const p = schema.find(p => p.title === title);
+    console.log(p)
   }
-  getAllPassword() {
-    
+  async getAllPassword() {
+    const data = await this.setupDB();
+    const { schema } = data;
+    schema.forEach(p => console.log(p.title, p.pswd));
   }
-  editPassword() {
-    
+  async editPassword(title: string, newPswd: string) {
+    const data = await this.setupDB();
+    const { schema } = data;
+    const index = schema.findIndex(p => p.title === title);
+    schema[index]['pswd'] = newPswd;
+    this.db.write()
   }
-  deletePassword() {
-    
+  async deletePassword(title: string) {
+    const data = await this.setupDB();
+    const { schema } = data;
+    const index = schema.findIndex(p => p.title === title);
+
   }
-  start() {
-    this.addPassword({ 'title': 'test1', 'pswd': 'password 40000000' })
+  async start() {
+    
   }
 }
 const example = new DbService();
-example.start()
+example.editPassword('test7', '1234');
