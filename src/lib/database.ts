@@ -17,13 +17,12 @@ export class DbService {
     const data = await this.setupDB();
     const { schema } = data;
     schema.push(password);
-    this.db.write();
+    await this.db.write();
   }
-  async getPasswordByTitle(title: string) {
+  async getPasswordByTitle(title: string): Promise<pswdSchema | undefined> {
     const data = await this.setupDB();
     const { schema } = data;
-    const p = schema.find(p => p.title === title);
-    console.log(p)
+    return schema.find(p => p.title === title);
   }
   async getAllPassword() {
     const data = await this.setupDB();
@@ -35,17 +34,16 @@ export class DbService {
     const { schema } = data;
     const index = schema.findIndex(p => p.title === title);
     schema[index]['pswd'] = newPswd;
-    this.db.write()
+    await this.db.write()
   }
   async deletePassword(title: string) {
     const data = await this.setupDB();
     const { schema } = data;
     const index = schema.findIndex(p => p.title === title);
-
-  }
-  async start() {
-    
+    schema.splice(index, 1);
+    await this.db.write();
   }
 }
 const example = new DbService();
-example.editPassword('test7', '1234');
+await example.addPassword({ title: 'paypal3', pswd: '123456789' });
+console.log(await example.getPasswordByTitle('paypal3'))
