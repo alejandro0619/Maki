@@ -1,22 +1,23 @@
 import { join, dirname } from 'path';
 import { Low, JSONFile } from 'lowdb';
 import { fileURLToPath } from 'url';
-import { pswdCollection } from '../db/pswd_Item';
+import { pswdCollection, pswdSchema } from '../db/pswd_Item';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export class DbService {
   private adapter = new JSONFile<pswdCollection>(join(__dirname, '../db/db.json'));
   private db = new Low<pswdCollection>(this.adapter);
   
-  private async setupDB() {
+  private async setupDB(): Promise<pswdCollection> {
     await this.db.read();
-    this.db.data ||= { schema : [{title: '', pswd: ' '}] }
-    const { schema } = this.db.data;
-    //schema.push({ title: 'ua', pswd: 'sssaaaaa' });
-    //await db.write();
+    return this.db.data ||= { schema: [] }
+
   }
-  addPassword() {
-    
+  async addPassword(password: pswdSchema) {
+    const data = await this.setupDB();
+    const { schema } = data;
+    schema.push(password);
+    this.db.write();
   }
   getPasswordByTitle() {
     
@@ -31,7 +32,7 @@ export class DbService {
     
   }
   start() {
-    this.setupDB()
+    this.addPassword({ 'title': 'test1', 'pswd': 'password 40000000' })
   }
 }
 const example = new DbService();
