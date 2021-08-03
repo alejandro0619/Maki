@@ -2,7 +2,9 @@ import { join, dirname } from 'path';
 import { Low, JSONFile } from 'lowdb';
 import { fileURLToPath } from 'url';
 import { pswdCollection, pswdSchema } from '../db/pswd_Item';
+import Password from './password.js';
 const __dirname = dirname(fileURLToPath(import.meta.url));
+const password = new Password();
 
 export class DbService {
   private adapter = new JSONFile<pswdCollection>(join(__dirname, '../db/db.json'));
@@ -13,10 +15,14 @@ export class DbService {
     return this.db.data ||= { schema: [] }
 
   }
-  async addPassword(password: pswdSchema) {
+  async addPassword(pswd: pswdSchema, psphrase: string) {
     const data = await this.setupDB();
     const { schema } = data;
-    schema.push(password);
+    const pswdEncrypted: pswdSchema = {
+      title: pswd.title,
+      pswd: password.encrypt(pswd.title, psphrase)
+    }
+    schema.push(pswdEncrypted);
     await this.db.write();
   }
   async getPasswordByTitle(title: string): Promise<pswdSchema | undefined> {
@@ -45,5 +51,5 @@ export class DbService {
   }
 }
 const example = new DbService();
-await example.addPassword({ title: 'paypal3', pswd: '123456789' });
-console.log(await example.getPasswordByTitle('paypal3'))
+await example.addPassword({ title: 'paypal4', pswd: '123456789' }, 'hello world');
+console.log(await example.getPasswordByTitle('paypal4'))
