@@ -42,10 +42,18 @@ export class DbService {
 
   }
 
-  async getAllPassword() {
+  async getAllPassword(): Promise<pswdSchema[]> {
     const data = await this.setupDB();
     const { schema } = data;
-    schema.forEach(p => console.log(p.title, p.pswd));
+    let pswd: pswdSchema[] = [];
+    for (let i = 0; i < schema.length; i++){
+      pswd.push({
+        title: schema[i].title,
+        pswd: password.decrypt(schema[i].pswd, this.psphrase)
+      });
+    }
+    console.log(pswd);
+    return pswd;
   }
 
   async editPassword(title: string, newPswd: string) {
@@ -66,6 +74,4 @@ export class DbService {
 
 }
 const example = new DbService('hello world');
-const addPswd = await example.addPassword({ 'title': 'gmail', 'pswd': '1234' });
-const pswd = await example.getPasswordByTitle('gmail');
-console.log(`original:  \n decrypted: ${pswd}`)
+const pswd = await example.getAllPassword();
