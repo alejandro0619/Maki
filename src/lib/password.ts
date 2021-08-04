@@ -15,7 +15,6 @@ export default class Password {
   public encrypt(pswd: string, psphrase: string): string { // pswd stands for password and psphrase for passphrase 
     return AES.encrypt(pswd, psphrase).toString();
   }
-
   public decrypt(pswdEncrypted: string, psphrase: string): string { //decrypt and decode
     return AES.decrypt(pswdEncrypted, psphrase).toString(enc.Utf8);
   }
