@@ -30,10 +30,11 @@ export default class TUI { // stands for Terminal User Interface, this is where 
      
      switch (menu['OptionSelected']) {
        case Choices.generate:
-         this.generateView();
+         await this.generateView();
+         
          break;
        case Choices.create:
-         
+        console.log(await this.getSinglePassword('abc3'));
          break;
        case Choices.edit:
 
@@ -77,7 +78,14 @@ export default class TUI { // stands for Terminal User Interface, this is where 
       pswd: pswd
     }
   }
-  private async generateView() {
+
+  private async getAllPasswordView(): Promise<pswdSchema[]> {
+    return  await this.db.getAllPassword();
+  }
+  private async getSinglePassword(title: string): Promise<string> {
+    return await this.db.getPasswordByTitle(title);
+  }
+  private async generateView(): Promise<void> {
     const generateOptions = await inquirer.prompt({
       message: 'How much long you want your password to be?',
       name: 'length',
@@ -96,7 +104,7 @@ export default class TUI { // stands for Terminal User Interface, this is where 
       const parsed: pswdSchema  = await this.parseToSave(pswdGenerated);
       await this.secret();
       await this.save(parsed, confirmation);
-      
+      console.log('saved')
     }
   }
 }
