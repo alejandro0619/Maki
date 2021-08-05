@@ -7,8 +7,9 @@ import DbService from './database.js';
 import { scrtpsp } from '../scrtpsp/scrtpsp.js'
 const password: Password = new Password();
 import { parseToNumber } from '../utils/parse_to_number.js';
+import { pswdSchema } from '../db/pswd_Item.js';
 export default class TUI { // stands for Terminal User Interface, this is where I'll create my UI using inquirer.
-
+  
   private async secret() {
     const secret = await inquirer.prompt({
       message: 'Enter a security phrase (this will encrypt and decrypt all your password,don\'t forget it)',
@@ -17,7 +18,8 @@ export default class TUI { // stands for Terminal User Interface, this is where 
     });
     scrtpsp.psp = secret['secret'];
   }
-  
+  // sets thefielf db after the assignment of secretpsp
+  private db = new DbService(scrtpsp.psp);
    public async Menu() {
     const menu = await inquirer.prompt({
       message: 'What do you want to do? ',
@@ -59,6 +61,22 @@ export default class TUI { // stands for Terminal User Interface, this is where 
         return false;
     }
   }
+  private async save(pswd: pswdSchema, confirmation: boolean) {
+    if (confirmation) {
+      this.db.addPassword(pswd)
+    }
+  }
+  private async parseToSave(pswd: string): Promise<pswdSchema> {
+    const titleOfThePassword = await inquirer.prompt({
+      message: 'Where are yoy going to use this? (We don\'t collect information but to save the database)',
+      name: 'title',
+      type: 'input',
+    });
+    return {
+      title: titleOfThePassword['title'],
+      pswd: pswd
+    }
+  }
   private async generateView() {
     const generateOptions = await inquirer.prompt({
       message: 'How much long you want your password to be?',
@@ -73,9 +91,11 @@ export default class TUI { // stands for Terminal User Interface, this is where 
       const pswdGenerated: string = password.generatePassword(pswdLength);
       await clipboardy.write(pswdGenerated);
       console.log(`Your password: ${chalk`{green ${pswdGenerated} }`} is copied on the clipboard!`);
+      const confirmation: boolean = await this.confirmToSave();
+      const parsed: pswdSchema  = await this.parseToSave(pswdGenerated);
       await this.secret();
-      await this.confirmToSave()
       console.log(scrtpsp.psp);
+      await this.save(parsed, confirmation);
       
     }
   }
