@@ -60,8 +60,8 @@ export class DbService {
     const data = await this.setupDB();
     const { schema } = data;
     const index = schema.findIndex(p => p.title === title);
-    schema[index]['pswd'] = newPswd;
-    await this.db.write()
+    schema[index]['pswd'] = password.encrypt(newPswd, this.psphrase);
+    await this.db.write();
   }
 
   async deletePassword(title: string) {
@@ -74,4 +74,5 @@ export class DbService {
 
 }
 const example = new DbService('hello world');
-const pswd = await example.getAllPassword();
+const pswd = await example.editPassword('gmail', '7894');
+await example.getAllPassword()
