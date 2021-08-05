@@ -5,7 +5,7 @@ import { pswdCollection, pswdSchema } from '../db/pswd_Item';
 import Password from './password.js';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const password = new Password();
-export class DbService {
+export default class DbService {
 
   private adapter = new JSONFile<pswdCollection>(join(__dirname, '../db/db.json'));
   private db = new Low<pswdCollection>(this.adapter);
@@ -73,6 +73,4 @@ export class DbService {
   }
 
 }
-const example = new DbService('hello world');
-const pswd = await example.editPassword('gmail', '7894');
-await example.getAllPassword()
+
