@@ -52,7 +52,6 @@ export default class DbService {
         pswd: password.decrypt(schema[i].pswd, this.psphrase)
       });
     }
-    console.log(pswd);
     return pswd;
   }
 

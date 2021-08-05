@@ -88,13 +88,13 @@ export default class TUI { // stands for Terminal User Interface, this is where 
       console.log(`Please enter a number.`);
       return this.generateView();
     } else {
+
       const pswdGenerated: string = password.generatePassword(pswdLength);
       await clipboardy.write(pswdGenerated);
       console.log(`Your password: ${chalk`{green ${pswdGenerated} }`} is copied on the clipboard!`);
       const confirmation: boolean = await this.confirmToSave();
       const parsed: pswdSchema  = await this.parseToSave(pswdGenerated);
       await this.secret();
-      console.log(scrtpsp.psp);
       await this.save(parsed, confirmation);
       
     }
