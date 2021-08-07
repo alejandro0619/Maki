@@ -5,19 +5,28 @@ import { Choices } from '../utils/Menu_choices.js';
 import Password from './password.js';
 import DbService from './database.js';
 import { scrtpsp } from '../scrtpsp/scrtpsp.js'
-const password: Password = new Password();
 import { parseToNumber } from '../utils/parse_to_number.js';
 import { pswdSchema } from '../db/pswd_Item.js';
+import Hash from '../helper/hash_passphrase.js';
+import getPassPhrase from '../helper/read_file.js';
+import Check from '../helper/check_first_time.js';
+const password: Password = new Password();
+const hash: Hash = new Hash();
 
 export default class CLIInterface { // * This is where I'll create my UI using inquirer.
   
-  private async secret(): Promise<{secret: string}> {
+  private setUserPassphrase() {
+    // set user passphrase when he execute the application for the first time
+
+  }
+  private async secret(): Promise<string> {
     const secret = await inquirer.prompt({
       message: 'Enter a security phrase (this will encrypt and decrypt all your password,don\'t forget it)',
       name: 'secret',
       type: 'password',
     });
-    return secret['secret'];
+    return hash.hashPassPhrase(secret['secret']);
+    
   }
   // sets the field db after the assignment of secretpsp
   private db = new DbService(scrtpsp.psp);
@@ -118,7 +127,7 @@ export default class CLIInterface { // * This is where I'll create my UI using i
       console.log(`Your password: ${chalk`{green ${pswdGenerated} }`} is copied on the clipboard!`);
       const confirmation: boolean = await this.confirmToSave();
       const parsed: pswdSchema  = await this.parseToSave(pswdGenerated);
-      await this.secret();
+      console.log(await this.secret());
       await this.save(parsed, confirmation);
       console.log('saved')
     }
