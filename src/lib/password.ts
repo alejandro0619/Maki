@@ -1,6 +1,6 @@
 import CryptoJS from "crypto-js";
 import crypto from 'node:crypto';
-const { AES, enc } = CryptoJS;
+const { AES, enc} = CryptoJS;
 export default class Password {
   public generatePassword(length: number): string {
 
@@ -11,7 +11,7 @@ export default class Password {
       .map((x) => wishlist[x % wishlist.length])
       .join('');
   }
-
+  
   public encrypt(pswd: string, psphrase: string): string { // pswd stands for password and psphrase for passphrase 
     return AES.encrypt(pswd, psphrase).toString();
   }
