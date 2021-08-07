@@ -4,7 +4,6 @@ import chalk from 'chalk';
 import { Choices } from '../utils/Menu_choices.js';
 import Password from './password.js';
 import DbService from './database.js';
-import { scrtpsp } from '../scrtpsp/scrtpsp.js'
 import { parseToNumber } from '../utils/parse_to_number.js';
 import { pswdSchema } from '../db/pswd_Item.js';
 import Hash from '../helper/hash_passphrase.js';
@@ -46,7 +45,7 @@ export default class CLIInterface { // * This is where I'll create my UI using i
     
   }
   // sets the field db after the assignment of secretpsp
-  private db = new DbService(scrtpsp.psp);
+  private db = new DbService(passphrase.read());
 
   public async MenuView() { // execute this function to se the user passphrase
     const userIsAuth: boolean = await this.setUserPassphrase();
@@ -66,13 +65,12 @@ export default class CLIInterface { // * This is where I'll create my UI using i
          case Choices.generate:
            await this.generateView(); //generate random passwords
            break;
-         
          case Choices.create:
           
            break;
          
          case Choices.edit:
-  
+           await this.editPasswords(); // edit password
            break;
          
          case Choices.view:
@@ -80,7 +78,8 @@ export default class CLIInterface { // * This is where I'll create my UI using i
            break;
          
          case Choices.search: 
-           await this.getSinglePasswordView('amazon'); // get password by title
+         console.log('a')
+           await this.getSinglePasswordView(); // get password by title
            break;
          
          case Choices.delete:
@@ -88,6 +87,19 @@ export default class CLIInterface { // * This is where I'll create my UI using i
            break;
        }
     }
+  }
+  private async editPasswords() {
+    const titleOfThePassword = await inquirer.prompt({
+      message: 'Title:',
+      name: 'title',
+      type: 'input',
+    });
+    const newPassword = await inquirer.prompt({
+      message: 'New password:',
+      name: 'password',
+      type: 'password',
+    });
+    await this.db.editPassword(titleOfThePassword['title'], password.encrypt(newPassword['password'], await passphrase.read()));
   }
   private async confirmToSave(): Promise<boolean>{
     const confirm = await inquirer.prompt({
@@ -129,9 +141,15 @@ export default class CLIInterface { // * This is where I'll create my UI using i
     console.log(await this.db.getAllPassword());
   }
 
-  private async getSinglePasswordView(title: string): Promise<void> {
-
-    console.log(await this.db.getPasswordByTitle(title));
+  private async getSinglePasswordView(): Promise<void> {
+    console.log('antes del prompt')
+    const title = await inquirer.prompt({
+      message: 'Tile',
+      name: 'password',
+      type: 'input',
+    });
+    console.log('despues del promptantes de la busqueda')
+    console.log(await this.db.getPasswordByTitle(title['password']));
 
   }
   private async generateView(): Promise<void> {
@@ -151,9 +169,8 @@ export default class CLIInterface { // * This is where I'll create my UI using i
       console.log(`Your password: ${chalk`{green ${pswdGenerated} }`} is copied on the clipboard!`);
       const confirmation: boolean = await this.confirmToSave();
       const parsed: pswdSchema  = await this.parseToSave(pswdGenerated);
-      console.log(await this.secret());
       await this.save(parsed, confirmation);
-      console.log('saved')
+      console.log('saved');
     }
   }
 }

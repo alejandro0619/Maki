@@ -19,3 +19,4 @@ export default class Password {
     return AES.decrypt(pswdEncrypted, psphrase).toString(enc.Utf8);
   }
 }
+

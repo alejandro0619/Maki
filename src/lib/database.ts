@@ -14,6 +14,7 @@ export default class DbService {
   readonly psphrase: string
   constructor(psphrase: string) {
     this.psphrase = psphrase
+    console.log(psphrase)
   }
 
   private async setupDB(): Promise<pswdCollection> {
@@ -39,6 +40,9 @@ export default class DbService {
     const data = await this.setupDB();
     const { schema } = data;
     const pswd: pswdSchema = <pswdSchema>schema.find(p => p.title === title);
+    console.log(this.psphrase)
+    console.log(pswd);
+    console.log(typeof pswd.pswd)
     return password.decrypt(pswd.pswd, this.psphrase);
 
   }
