@@ -1,7 +1,7 @@
 import { join, dirname } from 'path';
 import { Low, JSONFile } from 'lowdb';
 import { fileURLToPath } from 'url';
-import { pswdCollection, pswdSchema } from '../db/pswd_Item';
+import { pswdCollection, pswdSchema } from '../db/pswd_Item.js';
 import Password from './password.js';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const password = new Password();

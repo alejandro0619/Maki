@@ -8,20 +8,37 @@ import { scrtpsp } from '../scrtpsp/scrtpsp.js'
 import { parseToNumber } from '../utils/parse_to_number.js';
 import { pswdSchema } from '../db/pswd_Item.js';
 import Hash from '../helper/hash_passphrase.js';
-import getPassPhrase from '../helper/read_file.js';
+import GetPassPhrase from '../helper/read_file.js';
 import Check from '../helper/check_first_time.js';
+const passphrase: GetPassPhrase = new GetPassPhrase();
 const password: Password = new Password();
+const check: Check = new Check();
 const hash: Hash = new Hash();
 
 export default class CLIInterface { // * This is where I'll create my UI using inquirer.
   
-  private setUserPassphrase() {
+  private async setUserPassphrase(): Promise<boolean> {
     // set user passphrase when he execute the application for the first time
-
+    const userState: boolean = await check.check();
+    if (userState) {
+      const secret: string = await this.secret();
+      const hashed = hash.hashPassPhrase(secret);
+      passphrase.write(hashed);
+      return true
+    } else {
+      const psp: string = await passphrase.read();
+      const secret: string = await this.secret();
+      if (hash.compare(psp, secret)) {
+        return true;
+      } else {
+        return false
+      }
+      
+    }
   }
   private async secret(): Promise<string> {
     const secret = await inquirer.prompt({
-      message: 'Enter a security phrase (this will encrypt and decrypt all your password,don\'t forget it)',
+      message: 'Enter your security phrase',
       name: 'secret',
       type: 'password',
     });
@@ -31,7 +48,8 @@ export default class CLIInterface { // * This is where I'll create my UI using i
   // sets the field db after the assignment of secretpsp
   private db = new DbService(scrtpsp.psp);
 
-   public async MenuView() {
+  public async MenuView() { // execute this function to se the user passphrase
+    await this.setUserPassphrase();
     const menu = await inquirer.prompt({
       message: 'What do you want to do? ',
       type: 'list',
@@ -87,7 +105,7 @@ export default class CLIInterface { // * This is where I'll create my UI using i
   }
   private async parseToSave(pswd: string): Promise<pswdSchema> {
     const titleOfThePassword = await inquirer.prompt({
-      message: 'Where are yoy going to use this? (We don\'t collect information but to save the database)',
+      message: 'Where are you going to use this? (We don\'t collect information but to save the database)',
       name: 'title',
       type: 'input',
     });
