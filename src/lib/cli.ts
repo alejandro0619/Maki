@@ -8,18 +8,20 @@ import { scrtpsp } from '../scrtpsp/scrtpsp.js'
 const password: Password = new Password();
 import { parseToNumber } from '../utils/parse_to_number.js';
 import { pswdSchema } from '../db/pswd_Item.js';
+
 export default class CLIInterface { // * This is where I'll create my UI using inquirer.
   
-  private async secret() {
+  private async secret(): Promise<{secret: string}> {
     const secret = await inquirer.prompt({
       message: 'Enter a security phrase (this will encrypt and decrypt all your password,don\'t forget it)',
       name: 'secret',
       type: 'password',
     });
-    scrtpsp.psp = secret['secret'];
+    return secret['secret'];
   }
-  // sets thefielf db after the assignment of secretpsp
+  // sets the field db after the assignment of secretpsp
   private db = new DbService(scrtpsp.psp);
+
    public async MenuView() {
     const menu = await inquirer.prompt({
       message: 'What do you want to do? ',
