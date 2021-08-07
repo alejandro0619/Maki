@@ -3,6 +3,7 @@ import { Low, JSONFile } from 'lowdb';
 import { fileURLToPath } from 'url';
 import { pswdCollection, pswdSchema } from '../db/pswd_Item.js';
 import Password from './password.js';
+import { clear } from 'console';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const password = new Password();
 export default class DbService {

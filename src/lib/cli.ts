@@ -49,39 +49,45 @@ export default class CLIInterface { // * This is where I'll create my UI using i
   private db = new DbService(scrtpsp.psp);
 
   public async MenuView() { // execute this function to se the user passphrase
-    await this.setUserPassphrase();
-    const menu = await inquirer.prompt({
-      message: 'What do you want to do? ',
-      type: 'list',
-      name: 'OptionSelected',
-      choices: Object.values(Choices)
-    });
-     
-     switch (menu['OptionSelected']) {
-       case Choices.generate:
-         await this.generateView(); //generate random passwords
-         break;
+    const userIsAuth: boolean = await this.setUserPassphrase();
+    if (!userIsAuth) {
+      console.log('Please enter the correct passphrase to access to your passwords.');
+      await this.MenuView();
+    } else {
+      console.clear();
+      const menu = await inquirer.prompt({
+        message: 'What do you want to do? ',
+        type: 'list',
+        name: 'OptionSelected',
+        choices: Object.values(Choices)
+      });
        
-       case Choices.create:
-        
-         break;
-       
-       case Choices.edit:
-
-         break;
-       
-       case Choices.view:
-          this.getAllPasswordView(); // get all passwords
-         break;
-       
-       case Choices.search: 
-         await this.getSinglePasswordView('abc3'); // get password by title
-         break;
-       
-       case Choices.delete:
-
-         break;
-     }
+       switch (menu['OptionSelected']) {
+         case Choices.generate:
+           await this.generateView(); //generate random passwords
+           break;
+         
+         case Choices.create:
+          
+           break;
+         
+         case Choices.edit:
+  
+           break;
+         
+         case Choices.view:
+            this.getAllPasswordView(); // get all passwords
+           break;
+         
+         case Choices.search: 
+           await this.getSinglePasswordView('amazon'); // get password by title
+           break;
+         
+         case Choices.delete:
+  
+           break;
+       }
+    }
   }
   private async confirmToSave(): Promise<boolean>{
     const confirm = await inquirer.prompt({
