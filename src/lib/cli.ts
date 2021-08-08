@@ -211,7 +211,7 @@ export default class CLIInterface { // * This is where I'll create my UI using i
       const confirmation: boolean = await this.confirmToSave();
       const parsed: pswdSchema  = await this.parseToSave(pswdGenerated);
       await this.save(parsed, confirmation);
-      console.log('${chalk`{green saved}`}');
+      console.log(`${chalk`{green successfully saved!}`}`);
     }
   }
 }
