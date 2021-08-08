@@ -27,7 +27,7 @@ export default class CLIInterface { // * This is where I'll create my UI using i
     if (userState) {
       const secret: string = await this.secret();
       const hashed = hash.hashPassPhrase(secret);
-      passphrase.write(hashed);
+      await passphrase.write(hashed);
       return true
     } else {
       const psp: string = await passphrase.read();

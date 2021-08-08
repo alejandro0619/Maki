@@ -8,6 +8,7 @@ export default class GetPassPhrase {
   private filePath: string = join(__dirname, '../db/psp.txt');
 
   public read(): string {
+    console.log(readFileSync(this.filePath, { encoding: 'utf8' }))
     return readFileSync(this.filePath, { encoding: 'utf8' });
   }
 

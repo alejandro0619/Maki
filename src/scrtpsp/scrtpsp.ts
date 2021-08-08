@@ -1,3 +1,0 @@
-export let scrtpsp = {
-  psp: ''
-}
