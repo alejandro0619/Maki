@@ -96,12 +96,20 @@ export default class CLIInterface { // * This is where I'll create my UI using i
            break;
          
          case Choices.delete:
-  
+           await this.deletePassword();
            break;
        }
     }
   }
-
+  private async deletePassword(): Promise<void> {
+    const deletePassword = await inquirer.prompt({
+      message: 'Enter the title of the password you want to delete:',
+      name: 'password',
+      type: 'input',
+    });
+    await this.db.deletePassword(deletePassword['password']);
+    console.log(`${chalk`{green successfully deleted}`}`);
+  }
   private async createPassword(): Promise<void> {
     const createdPassword = await inquirer.prompt({
       message: 'Enter the password:',
@@ -109,7 +117,6 @@ export default class CLIInterface { // * This is where I'll create my UI using i
       type: 'input',
     });
     const password: pswdSchema = await this.parseToSave(createdPassword['password']);
-    console.log( 'parsing password so its not encrypted' + password)
     await this.db.addPassword(password);
     console.log(`${chalk`{green successfully saved!}`}`);
   }
@@ -176,7 +183,6 @@ export default class CLIInterface { // * This is where I'll create my UI using i
   }
 
   private async getSinglePasswordView(): Promise<void> {
-    console.log('antes del prompt')
     const title = await inquirer.prompt({
       message: 'Tile',
       name: 'password',
@@ -205,7 +211,7 @@ export default class CLIInterface { // * This is where I'll create my UI using i
       const confirmation: boolean = await this.confirmToSave();
       const parsed: pswdSchema  = await this.parseToSave(pswdGenerated);
       await this.save(parsed, confirmation);
-      console.log('saved');
+      console.log('${chalk`{green saved}`}');
     }
   }
 }

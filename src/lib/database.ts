@@ -42,7 +42,6 @@ export default class DbService {
       pswd: password.encrypt(pswd.pswd, this.psphrase),
     }
     schema.push(pswdEncrypted);
-    console.log(pswdEncrypted);
     await this.db.write();
 
   }
@@ -65,7 +64,6 @@ export default class DbService {
         title: schema[i].title,
         pswd: password.decrypt(schema[i].pswd, this.psphrase)
       });
-      console.log('dbservice decrypting in for loop '+password.decrypt(schema[i].pswd, this.psphrase))
     }
     return pswd;
   }
