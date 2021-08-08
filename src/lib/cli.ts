@@ -26,23 +26,26 @@ export default class CLIInterface { // * This is where I'll create my UI using i
     const userState: boolean = await check.check();
     if (userState) {
       const secret: string = await this.secret();
-      const hashed = hash.hashPassPhrase(secret);
+      const hashed: string = hash.hashPassPhrase(secret);
       await passphrase.write(hashed);
-      return true
+      return true;
+
     } else {
       const psp: string = await passphrase.read();
       const secret: string = await this.secret();
+
       if (hash.compare(psp, secret)) {
+
         return true;
       } else {
-        return false
+        return false;
       }
       
     }
   }
 
   private async secret(): Promise<string> {
-    const secret = await inquirer.prompt({
+    const secret: { secret: string } = await inquirer.prompt({
       message: 'Enter your security phrase',
       name: 'secret',
       type: 'password',
@@ -52,12 +55,12 @@ export default class CLIInterface { // * This is where I'll create my UI using i
   }
 
   // sets the field db after the assignment of secretpsp
-  private db = new DbService(passphrase.read());
+  private db: DbService = new DbService(passphrase.read());
 
   /*
   This is the first view that will be "rendered" 
   */
-  public async MenuView() { // execute this function to se the user passphrase
+  public async MenuView(): Promise<void> { // execute this function to se the user passphrase
 
     const userIsAuth: boolean = await this.setUserPassphrase();
     if (!userIsAuth) {
@@ -65,7 +68,7 @@ export default class CLIInterface { // * This is where I'll create my UI using i
       await this.MenuView();
     } else {
       console.clear();
-      const menu = await inquirer.prompt({
+      const menu: { OptionSelected: Choices } = await inquirer.prompt({
         message: 'What do you want to do? ',
         type: 'list',
         name: 'OptionSelected',
@@ -77,7 +80,7 @@ export default class CLIInterface { // * This is where I'll create my UI using i
            await this.generateView(); //generate random passwords
            break;
          case Choices.create:
-          
+           await this.createPassword();
            break;
          
          case Choices.edit:
@@ -99,24 +102,35 @@ export default class CLIInterface { // * This is where I'll create my UI using i
     }
   }
 
-  private async editPasswords() {
+  private async createPassword(): Promise<void> {
+    const createdPassword = await inquirer.prompt({
+      message: 'Enter the password:',
+      name: 'password',
+      type: 'input',
+    });
+    const password: pswdSchema = await this.parseToSave(createdPassword['password']);
+    console.log( 'parsing password so its not encrypted' + password)
+    await this.db.addPassword(password);
+    console.log(`${chalk`{green successfully saved!}`}`);
+  }
+
+  private async editPasswords(): Promise<void> {
     const titleOfThePassword = await inquirer.prompt({
-      message: 'Title:',
+      message: 'Title',
       name: 'title',
       type: 'input',
     });
-
-    const newPassword = await inquirer.prompt({
+    
+    const newPassword: { password: string } = await inquirer.prompt({
       message: 'New password:',
       name: 'password',
       type: 'password',
     });
-
     await this.db.editPassword(titleOfThePassword['title'], newPassword['password']); // passing the title and new password to search and edit in db
   }
 
-  private async confirmToSave(): Promise<boolean>{
-    const confirm = await inquirer.prompt({
+  private async confirmToSave(): Promise<boolean> {
+    const confirm: {confirmation: boolean} = await inquirer.prompt({
       message: 'Do you want to save it?',
       name: 'confirmation',
       type: 'confirm',
@@ -132,7 +146,7 @@ export default class CLIInterface { // * This is where I'll create my UI using i
     }
   }
 
-  private async save(pswd: pswdSchema, confirmation: boolean) {
+  private async save(pswd: pswdSchema, confirmation: boolean): Promise<void> {
     if (confirmation) {
       this.db.addPassword(pswd)
     }
@@ -140,7 +154,7 @@ export default class CLIInterface { // * This is where I'll create my UI using i
 
   private async parseToSave(pswd: string): Promise<pswdSchema> {
     const titleOfThePassword = await inquirer.prompt({
-      message: 'Where are you going to use this? (We don\'t collect information but to save the database)',
+      message: 'Title',
       name: 'title',
       type: 'input',
     });

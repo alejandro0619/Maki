@@ -1,43 +1,55 @@
+// imports:
+
 import { join, dirname } from 'path';
 import { Low, JSONFile } from 'lowdb';
 import { fileURLToPath } from 'url';
 import { pswdCollection, pswdSchema } from '../db/pswd_Item.js';
 import Password from './password.js';
-import { clear } from 'console';
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const password = new Password();
+
+// initialize:
+
+const __dirname: string = dirname(fileURLToPath(import.meta.url));
+const password: Password = new Password();
 export default class DbService {
 
-  private adapter = new JSONFile<pswdCollection>(join(__dirname, '../db/db.json'));
-  private db = new Low<pswdCollection>(this.adapter);
+  private adapter: JSONFile<pswdCollection> = new JSONFile<pswdCollection>(join(__dirname, '../db/db.json'));
+  private db: Low<pswdCollection> = new Low<pswdCollection>(this.adapter);
   
-  readonly psphrase: string
+  readonly psphrase: string;
+  /*
+  reads the hashed text from the file psp.text and sets it as pass phrase.
+  This passphrase will always be required in order to be able to make the CRUD operations within the database.
+   */
   constructor(psphrase: string) {
-    this.psphrase = psphrase
-    console.log(psphrase)
+    this.psphrase = psphrase;   
   }
 
+  /*
+  Sets the default schema for the database.
+   */
   private async setupDB(): Promise<pswdCollection> {
     await this.db.read();
     return this.db.data ||= { schema: [] }
 
   }
-  async addPassword(pswd: pswdSchema) {
 
-    const data = await this.setupDB();
+  async addPassword(pswd: pswdSchema) { 
+
+    const data: pswdCollection = await this.setupDB();
     const { schema } = data;
     const pswdEncrypted: pswdSchema = {
       title: pswd.title,
       pswd: password.encrypt(pswd.pswd, this.psphrase),
     }
     schema.push(pswdEncrypted);
+    console.log(pswdEncrypted);
     await this.db.write();
 
   }
 
   async getPasswordByTitle(title: string) {
 
-    const data = await this.setupDB();
+    const data: pswdCollection = await this.setupDB();
     const { schema } = data;
     const pswd: pswdSchema = <pswdSchema>schema.find(p => p.title === title);
     return password.decrypt(pswd.pswd, this.psphrase);
@@ -45,7 +57,7 @@ export default class DbService {
   }
 
   async getAllPassword(): Promise<pswdSchema[]> {
-    const data = await this.setupDB();
+    const data: pswdCollection = await this.setupDB();
     const { schema } = data;
     let pswd: pswdSchema[] = [];
     for (let i = 0; i < schema.length; i++){
@@ -53,12 +65,13 @@ export default class DbService {
         title: schema[i].title,
         pswd: password.decrypt(schema[i].pswd, this.psphrase)
       });
+      console.log('dbservice decrypting in for loop '+password.decrypt(schema[i].pswd, this.psphrase))
     }
     return pswd;
   }
 
   async editPassword(title: string, newPswd: string) {
-    const data = await this.setupDB();
+    const data: pswdCollection = await this.setupDB();
     const { schema } = data;
     const index = schema.findIndex(p => p.title === title);
     schema[index]['pswd'] = password.encrypt(newPswd, this.psphrase);
@@ -66,7 +79,7 @@ export default class DbService {
   }
 
   async deletePassword(title: string) {
-    const data = await this.setupDB();
+    const data: pswdCollection = await this.setupDB();
     const { schema } = data;
     const index = schema.findIndex(p => p.title === title);
     schema.splice(index, 1);
