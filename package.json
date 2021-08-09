@@ -11,7 +11,13 @@
     "type": "git",
     "url": "git+https://github.com/alejandro0619/Maki.git"
   },
-  "keywords": ["cli", "password generator", "password", "generator", "application"],
+  "keywords": [
+    "cli",
+    "password generator",
+    "password",
+    "generator",
+    "application"
+  ],
   "author": "Spaghetti <alejandrolpz0619@gmail.com>",
   "license": "ISC",
   "bugs": {
@@ -24,10 +30,11 @@
     "clipboardy": "^2.3.0",
     "crypto-js": "^4.1.1",
     "inquirer": "^8.1.2",
+    "install": "^0.13.0",
     "lowdb": "^2.1.0"
   },
   "devDependencies": {
     "@types/crypto-js": "^4.0.2",
-    "@types/node": "^16.4.8"
+    "@types/node": "^16.4.13"
   }
 }
