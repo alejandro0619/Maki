@@ -46,16 +46,21 @@ export default class DbService {
 
   }
 
-  async getPasswordByTitle(title: string) {
+  async getPasswordByTitle(title: string): Promise< string | undefined> {
 
-    const data: pswdCollection = await this.setupDB();
-    const { schema } = data;
-    const pswd: pswdSchema = <pswdSchema>schema.find(p => p.title === title);
+    try {
+      const data: pswdCollection = await this.setupDB();
+      const { schema } = data;
+      const pswd: pswdSchema = <pswdSchema>schema.find(p => p.title === title);
     return password.decrypt(pswd.pswd, this.psphrase);
+    } catch (error) {
+      console.log(error)
+    }
 
   }
 
-  async getAllPassword(): Promise<pswdSchema[]> {
+  async getAllPassword(): Promise<pswdSchema[] | undefined  > {
+   try {
     const data: pswdCollection = await this.setupDB();
     const { schema } = data;
     let pswd: pswdSchema[] = [];
@@ -66,6 +71,9 @@ export default class DbService {
       });
     }
     return pswd;
+   } catch (error) {
+     console.error(error)
+   }
   }
 
   async editPassword(title: string, newPswd: string) {
