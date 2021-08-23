@@ -52,7 +52,7 @@ export default class DbService {
       const data: pswdCollection = await this.setupDB();
       const { schema } = data;
       const pswd: pswdSchema = <pswdSchema>schema.find(p => p.title === title);
-    return password.decrypt(pswd.pswd, this.psphrase);
+     return password.decrypt(pswd.pswd, this.psphrase);
     } catch (error) {
       console.log(error)
     }
